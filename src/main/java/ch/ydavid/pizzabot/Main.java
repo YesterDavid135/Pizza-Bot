@@ -1,5 +1,7 @@
-package ch.ydavid.Pizzabot;
+package ch.ydavid.pizzabot;
 
+import ch.ydavid.pizzabot.listener.JoinListener;
+import ch.ydavid.pizzabot.listener.MessageListener;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.OnlineStatus;
@@ -24,9 +26,10 @@ public class Main {
 
         //Build JDA
         JDA api = JDABuilder.createDefault(token)
-                .setActivity(Activity.watching("Pizza"))
+                .setActivity(Activity.watching("you"))
                 .setStatus(OnlineStatus.IDLE)
                 .addEventListeners(new MessageListener())
+                .addEventListeners(new JoinListener())
                 .enableIntents(GatewayIntent.GUILD_MESSAGES)
                 .enableIntents(GatewayIntent.DIRECT_MESSAGES)
                 .enableIntents(GatewayIntent.GUILD_MESSAGE_TYPING)
@@ -38,8 +41,9 @@ public class Main {
         for (Guild guild : api.getGuilds()) {
             if (guild != null) {
                 guild.upsertCommand("pizza", "Pizza time").queue();
-                guild.upsertCommand("add", "Adds numbers").addOption(OptionType.NUMBER, "number1", "Number 1").addOption(OptionType.NUMBER, "number2", "Number 2").queue();
-                System.out.println("Added commands to " + guild.getName());
+                guild.upsertCommand("lock", "Locks your Voice Channel").queue();
+                guild.upsertCommand("limit", "Limits your Voice Channel").addOption(OptionType.NUMBER, "limit", "Limit").queue();
+                System.out.println("Loaded " + guild.getName());
             }
         }
     }
