@@ -1,4 +1,4 @@
-package ch.ydavid;
+package ch.ydavid.Pizzabot;
 
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
@@ -6,7 +6,6 @@ import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
-import java.nio.channels.Channel;
 
 public class MessageListener extends ListenerAdapter {
     @Override
@@ -17,9 +16,9 @@ public class MessageListener extends ListenerAdapter {
         String content = message.getContentRaw();
         // getContentRaw() is an atomic getter
         // getContentDisplay() is a lazy getter which modifies the content for e.g. console view (strip discord formatting)
-        if (content.equals("Hallo")) {
+        if (content.equalsIgnoreCase("hallo")) {
             MessageChannel channel = event.getChannel();
-            channel.sendMessage("Hallo @" + event.getAuthor().getName()).queue(); // Important to call .queue() on the RestAction returned by sendMessage(...)
+            channel.sendMessage("Hey " + event.getAuthor().getAsMention()).queue(); // Important to call .queue() on the RestAction returned by sendMessage(...)
         }
     }
 
@@ -34,7 +33,7 @@ public class MessageListener extends ListenerAdapter {
                 if (event.getOptions().size() != 2)
                     event.reply("Please provide 2 Parameters.").setEphemeral(true).queue();
 
-                Double n1, n2;
+                double n1, n2;
                 n1 = event.getOptions().get(0).getAsDouble();
                 n2 = event.getOptions().get(1).getAsDouble();
 
