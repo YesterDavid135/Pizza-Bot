@@ -20,7 +20,7 @@ public class Main {
         // Read Token
         File file = new File("src/main/resources/bot.token");
         BufferedReader br = new BufferedReader(new FileReader(file));
-        String token  = br.readLine();
+        String token = br.readLine();
 
         //Build JDA
         JDA api = JDABuilder.createDefault(token)
@@ -34,13 +34,13 @@ public class Main {
 
         api.awaitReady();
 
-        //Add Commands
-        Guild guild = api.getGuildById("833624931438428161");
-        if (guild != null) {
-            guild.upsertCommand("pizza", "Pizza time").queue();
-            guild.upsertCommand("add", "Adds numbers").addOption(OptionType.NUMBER, "number1", "Number 1").addOption(OptionType.NUMBER, "number2", "Number 2").queue();
-
+        //Add Commands to every Server
+        for (Guild guild : api.getGuilds()) {
+            if (guild != null) {
+                guild.upsertCommand("pizza", "Pizza time").queue();
+                guild.upsertCommand("add", "Adds numbers").addOption(OptionType.NUMBER, "number1", "Number 1").addOption(OptionType.NUMBER, "number2", "Number 2").queue();
+                System.out.println("Added commands to " + guild.getName());
+            }
         }
-
     }
 }
