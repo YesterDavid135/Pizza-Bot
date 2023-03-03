@@ -38,6 +38,7 @@ public class Main {
         for (Guild guild : api.getGuilds()) {
             if (guild != null) {
                 guild.upsertCommand("pizza", "Pizza time").queue();
+                guild.upsertCommand("connect", "Connects to your Voice Channel").queue();
                 guild.upsertCommand("add", "Adds numbers").addOption(OptionType.NUMBER, "number1", "Number 1").addOption(OptionType.NUMBER, "number2", "Number 2").queue();
                 System.out.println("Added commands to " + guild.getName());
             }

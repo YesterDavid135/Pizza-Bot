@@ -1,10 +1,19 @@
 package ch.ydavid.Pizzabot;
 
+import com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler;
+import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
+import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
+import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
+import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers;
+import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
+import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
+import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.managers.AudioManager;
 
 
 public class MessageListener extends ListenerAdapter {
@@ -38,9 +47,58 @@ public class MessageListener extends ListenerAdapter {
                 n2 = event.getOptions().get(1).getAsDouble();
 
                 event.reply(n1 + " + " + n2 + " equals " + (n1 + n2)).setEphemeral(true).queue();
-        }
+                break;
+            case "connect":
+                if (event.getGuild() == null)
+                    return;
+                if (!event.getMember().getVoiceState().inVoiceChannel()) {
+                    event.reply("You are not connected to a voice Channel").queue();
+                    return;
+                }
+                AudioManager audioManager = event.getGuild().getAudioManager();
 
+                AudioPlayerManager playerManager = new DefaultAudioPlayerManager();
+                AudioSourceManagers.registerRemoteSources(playerManager);
+
+                AudioPlayer player = playerManager.createPlayer();
+
+                TrackScheduler trackScheduler = new TrackScheduler();
+                player.addListener(trackScheduler);
+
+
+                audioManager.setSendingHandler(new AudioPlayerSendHandler(player));
+                audioManager.openAudioConnection(event.getMember().getVoiceState().getChannel());
+                audioManager.setSelfDeafened(true);
+
+                playerManager.loadItem("Test", new AudioLoadResultHandler() {
+                    @Override
+                    public void trackLoaded(AudioTrack track) {
+                        trackScheduler.queue(track);
+                    }
+
+                    @Override
+                    public void playlistLoaded(AudioPlaylist playlist) {
+                        for (AudioTrack track : playlist.getTracks()) {
+                            trackScheduler.queue(track);
+                        }
+                    }
+
+                    @Override
+                    public void noMatches() {
+                        // Notify the user that we've got nothing
+                    }
+
+                    @Override
+                    public void loadFailed(FriendlyException throwable) {
+                        // Notify the user that everything exploded
+                    }
+                });
+
+
+                player.playTrack();
+
+        }
     }
 
-
 }
+
