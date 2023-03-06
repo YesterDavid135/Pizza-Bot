@@ -12,17 +12,20 @@ import net.dv8tion.jda.api.requests.GatewayIntent;
 
 import javax.security.auth.login.LoginException;
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 
 public class Main {
     public static void main(String[] args) throws LoginException, InterruptedException, IOException {
+        String token = "";
 
         // Read Token
-        File file = new File("src/main/resources/bot.token");
-        BufferedReader br = new BufferedReader(new FileReader(file));
-        String token = br.readLine();
+        try (InputStream in = Main.class.getResourceAsStream("/bot.token");
+             BufferedReader reader = new BufferedReader(new InputStreamReader(in))) {
+            // Use resource
+            token = reader.readLine();
+        }
 
         //Build JDA
         JDA api = JDABuilder.createDefault(token)
