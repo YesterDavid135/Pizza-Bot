@@ -1,6 +1,5 @@
 package ch.ydavid.pizzabot;
 
-import ch.ydavid.pizzabot.entity.Person;
 import ch.ydavid.pizzabot.listener.JoinListener;
 import ch.ydavid.pizzabot.listener.MessageListener;
 import net.dv8tion.jda.api.JDA;
@@ -11,9 +10,6 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
 import javax.security.auth.login.LoginException;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -44,25 +40,18 @@ public class Main {
 
         api.awaitReady();
 
+        System.out.println(api.getSelfUser().getName());
+
         //Add Commands to every Server
         for (Guild guild : api.getGuilds()) {
             if (guild != null) {
                 guild.upsertCommand("pizza", "Pizza time").queue();
+                guild.upsertCommand("setup", "Setup Dynamic Voice Channels").addOption(OptionType.STRING, "channel", "Name of the new voice channel").addOption(OptionType.STRING, "category", "Name of the category").queue();
                 guild.upsertCommand("lock", "Locks your Voice Channel").queue();
                 guild.upsertCommand("limit", "Limits your Voice Channel").addOption(OptionType.NUMBER, "limit", "Limit").queue();
                 System.out.println("Loaded " + guild.getName());
             }
         }
-        EntityManagerFactory entityManagerFactory;
 
-        entityManagerFactory = Persistence.createEntityManagerFactory("ch.ydavid.pizzabot");
-
-        Person person = new Person();
-
-        person.setName("David");
-
-        EntityManager entityManager = entityManagerFactory.createEntityManager();
-
-        entityManager.persist(person);
     }
 }

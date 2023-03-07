@@ -5,9 +5,6 @@
              version="2.0">
 
     <persistence-unit name="ch.ydavid.pizzabot">
-
-        <class>ch.ydavid.pizzabot.entity.Person</class>
-
         <properties>
             <property name="javax.persistence.jdbc.driver" value="com.mysql.cj.jdbc.Driver"/>
             <property name="javax.persistence.jdbc.url"
@@ -17,7 +14,7 @@
 
             <property name="hibernate.dialect" value="org.hibernate.dialect.MySQLDialect"/>
             <property name="hibernate.show_sql" value="true"/>
-            <property name="hibernate.hbm2ddl.auto" value="create"/>
+            <property name="hibernate.hbm2ddl.auto" value="update"/>
         </properties>
 
     </persistence-unit>
