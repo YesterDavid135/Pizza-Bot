@@ -12,7 +12,7 @@ public class GuildConfigDAO {
         entityManagerFactory = Persistence.createEntityManagerFactory("ch.ydavid.pizzabot");
     }
 
-    public boolean insertConfig(GuildConfig config) {
+    public boolean peristConfig(GuildConfig config) {
 
         boolean success = true;
 

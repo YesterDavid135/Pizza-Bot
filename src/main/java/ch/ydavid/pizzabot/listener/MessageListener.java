@@ -1,12 +1,15 @@
 package ch.ydavid.pizzabot.listener;
 
 import ch.ydavid.pizzabot.manager.GeneralManager;
+import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
+import java.awt.*;
 import java.util.Date;
 
 
@@ -44,14 +47,26 @@ public class MessageListener extends ListenerAdapter {
                 manager.getDynamicVoiceManager().limitCommand(event);
                 break;
             case "setup":
-                manager.getDynamicVoiceManager().setupCommand(event);
+                if (event.getMember().hasPermission(Permission.ADMINISTRATOR))
+                    manager.getDynamicVoiceManager().setupCommand(event);
+                else {
+                    EmbedBuilder embed = new EmbedBuilder()
+                            .setTitle("Insufficient Permission")
+                            .setDescription("Sorry, this is for Administrators only")
+                            .setColor(Color.red);
 
+                    event.getHook().sendMessageEmbeds(embed.build()).queue();
+                }
                 break;
+            default:
+                EmbedBuilder embed = new EmbedBuilder()
+                        .setTitle("Unknown Command")
+                        .setDescription("Sorry, this command isn't valid anymore")
+                        .setColor(Color.red);
+                event.getHook().sendMessageEmbeds(embed.build()).queue();
         }
 
     }
-
-
 
 
 }

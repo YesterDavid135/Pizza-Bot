@@ -31,7 +31,7 @@ public class DynamicVoiceManager {
 
         event.getGuild().createCategory(event.getOption("category").getAsString()).queue(category ->
                 category.createVoiceChannel(event.getOption("channel").getAsString()).queue(voiceChannel -> {
-                    if (configDAO.insertConfig(new GuildConfig(
+                    if (configDAO.peristConfig(new GuildConfig(
                             event.getGuild().getId(),
                             voiceChannel.getId(),
                             category.getId()))) {
@@ -61,7 +61,7 @@ public class DynamicVoiceManager {
         else
             embed.addField("Current Voice Channel", event.getGuild().getVoiceChannelById(gc.getNewVCId()).getAsMention(), true);
         embed.addField("New Voice Channel", event.getOption("channel").getAsString(), false);
-        embed.addField("New Category", event.getOption( "category").getAsString(), true);
+        embed.addField("New Category", event.getOption("category").getAsString(), true);
 
         net.dv8tion.jda.api.interactions.components.Button overWriteButton = Button.danger("setup-overwrite", "Overwrite Setup");
 
@@ -69,8 +69,26 @@ public class DynamicVoiceManager {
     }
 
     public void overwriteSetup(ButtonClickEvent event) {
-        String lol = event.getMessage().getEmbeds().get(0).getFields().get(0).getValue();
-        event.getHook().editOriginal("Overwrite").queue();
+        GuildConfig gc = configDAO.getEntry(event.getGuild().getId());
+        String voice = event.getMessage().getEmbeds().get(0).getFields().get(1).getValue();
+        String categoryName = event.getMessage().getEmbeds().get(0).getFields().get(2).getValue();
+        event.getGuild().createCategory(categoryName).queue(category ->
+                category.createVoiceChannel(voice).queue(voiceChannel -> {
+                    gc.setCategoryID(category.getId());
+                    gc.setNewVCId(voiceChannel.getId());
+                    EmbedBuilder embed = new EmbedBuilder();
+                    if (configDAO.peristConfig(gc)) {
+                        embed.setTitle("Setup success");
+                        embed.setColor(Color.GREEN);
+                        embed.setDescription("Join " + voiceChannel.getAsMention() + " to try it out!");
+                    } else {
+                        embed.setTitle("Setup error");
+                        embed.setColor(Color.RED);
+                        embed.setDescription("Somewhere happened a error");
+                    }
+                    event.getHook().sendMessageEmbeds(embed.build()).queue();
+                }));
+
     }
 
     public void limitCommand(SlashCommandEvent event) {
