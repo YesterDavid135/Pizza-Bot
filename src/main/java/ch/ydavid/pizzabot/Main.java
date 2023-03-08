@@ -1,7 +1,9 @@
 package ch.ydavid.pizzabot;
 
+import ch.ydavid.pizzabot.listener.ButtonListener;
 import ch.ydavid.pizzabot.listener.JoinListener;
 import ch.ydavid.pizzabot.listener.MessageListener;
+import ch.ydavid.pizzabot.manager.GeneralManager;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.OnlineStatus;
@@ -27,12 +29,15 @@ public class Main {
             token = reader.readLine();
         }
 
+        GeneralManager manager = new GeneralManager();
+
         //Build JDA
         JDA api = JDABuilder.createDefault(token)
                 .setActivity(Activity.watching("you"))
                 .setStatus(OnlineStatus.IDLE)
-                .addEventListeners(new MessageListener())
-                .addEventListeners(new JoinListener())
+                .addEventListeners(new MessageListener(manager))
+                .addEventListeners(new JoinListener(manager))
+                .addEventListeners(new ButtonListener(manager))
                 .enableIntents(GatewayIntent.GUILD_MESSAGES)
                 .enableIntents(GatewayIntent.DIRECT_MESSAGES)
                 .enableIntents(GatewayIntent.GUILD_MESSAGE_TYPING)

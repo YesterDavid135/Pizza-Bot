@@ -1,5 +1,6 @@
 package ch.ydavid.pizzabot.listener;
 
+import ch.ydavid.pizzabot.manager.GeneralManager;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.guild.voice.GenericGuildVoiceUpdateEvent;
@@ -10,6 +11,11 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
 public class JoinListener extends ListenerAdapter {
 
+    private GeneralManager manager;
+
+    public JoinListener(GeneralManager manager) {
+        this.manager = manager;
+    }
 
     @Override
     public void onGuildVoiceJoin(GuildVoiceJoinEvent event) {
