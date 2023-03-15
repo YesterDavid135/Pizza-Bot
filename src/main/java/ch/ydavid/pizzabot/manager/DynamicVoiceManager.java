@@ -40,7 +40,7 @@ public class DynamicVoiceManager {
                             embed.setColor(Color.GREEN);
                             embed.setDescription("Join " + voiceChannel.getAsMention() + " to try it out!");
                         }
-                    } else if (configDAO.insertConfig(config)) {
+                    } else if (configDAO.peristConfig(config)) {
                         embed.setTitle("Setup success");
                         embed.setColor(Color.GREEN);
                         embed.setDescription("Join " + voiceChannel.getAsMention() + " to try it out!");
