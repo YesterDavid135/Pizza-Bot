@@ -34,6 +34,28 @@ public class GuildConfigDAO {
 
     }
 
+    public boolean mergeConfig(GuildConfig config) {
+
+        boolean success = true;
+
+        EntityManager entityManager = entityManagerFactory.createEntityManager();
+        entityManager.getTransaction().begin();
+
+        try {
+            entityManager.merge(config);
+            entityManager.getTransaction().commit();
+        } catch (PersistenceException e) {
+            if (entityManager.getTransaction().isActive())
+                entityManager.getTransaction().rollback();
+            e.printStackTrace();
+        } finally {
+            entityManager.close();
+        }
+
+        return success;
+
+    }
+
     public GuildConfig getEntry(String guildID) {
 
         GuildConfig gc = null;

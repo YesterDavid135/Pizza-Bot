@@ -1,9 +1,10 @@
 package ch.ydavid.pizzabot.entity;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import org.hibernate.annotations.UpdateTimestamp;
+
+import javax.persistence.*;
+import java.sql.Date;
+import java.sql.Timestamp;
 
 @Entity
 @Table(name = "guildconfig")
@@ -33,6 +34,11 @@ public class GuildConfig {
      * Parent of newVCID
      */
     private String categoryID;
+
+    @UpdateTimestamp
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "last_update")
+    private java.util.Date lastUpdate;
 
     public void setId(Long id) {
         this.id = id;
