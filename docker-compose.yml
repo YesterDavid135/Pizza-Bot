@@ -1,0 +1,26 @@
+version: "3.8"
+
+services:
+  mysqldb:
+    image: mysql:5.7
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      - MYSQL_USER=pizza
+      - MYSQL_PASSWORD=pizza
+      - MYSQL_ROOT_PASSWORD=pizza
+      - MYSQL_DATABASE=pizzabot
+    ports:
+      - $MYSQLDB_LOCAL_PORT:$MYSQLDB_DOCKER_PORT
+    volumes:
+      - db:/var/lib/mysql
+  app:
+    depends_on:
+      - mysqldb
+    build: ./
+    restart: on-failure
+    stdin_open: true
+    tty: true
+
+volumes:
+  db:
