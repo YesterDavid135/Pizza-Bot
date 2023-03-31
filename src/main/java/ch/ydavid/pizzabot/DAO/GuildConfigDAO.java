@@ -12,6 +12,28 @@ public class GuildConfigDAO {
         entityManagerFactory = Persistence.createEntityManagerFactory("ch.ydavid.pizzabot");
     }
 
+    public boolean checkIfConfigExists(String guildID) {
+        boolean configExists = false;
+        EntityManager entityManager = entityManagerFactory.createEntityManager();
+        entityManager.getTransaction().begin();
+
+        try {
+            TypedQuery<Long> query = entityManager.createQuery("select count(*) from GuildConfig g where g.guildId = :guildID", Long.class);
+            query.setParameter("guildID", guildID);
+            configExists = query.getSingleResult() == 1;
+            System.out.println(query.getSingleResult());
+        } catch (PersistenceException e) {
+            if (entityManager.getTransaction().isActive())
+                entityManager.getTransaction().rollback();
+            e.printStackTrace();
+        } finally {
+            entityManager.close();
+        }
+
+        return configExists;
+
+    }
+
     public boolean peristConfig(GuildConfig config) {
 
         boolean success = true;

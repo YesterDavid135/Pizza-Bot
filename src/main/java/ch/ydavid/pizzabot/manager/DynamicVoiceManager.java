@@ -19,16 +19,21 @@ public class DynamicVoiceManager {
 
     public void setupCommand(SlashCommandEvent event) {
 
-        GuildConfig gc = configDAO.getEntry(event.getGuild().getId());
-
-        if (gc == null)
-            setupChannel(new GuildConfig(), event.getOption("channel").getAsString(), event.getOption("category").getAsString(), event.getGuild(), event.getHook());
+        if (isSetup(event.getGuild().getId()))
+            setupExistsError(event);
         else
-            setupExistsError(event, gc);
+            setupChannel(new GuildConfig(), event.getOption("channel").getAsString(), event.getOption("category").getAsString(), event.getGuild(), event.getHook());
+
+
+    }
+
+    public boolean isSetup(String guildID) {
+        return configDAO.checkIfConfigExists(guildID);
     }
 
     public void setupChannel(GuildConfig config, String channelName, String categoryName, Guild guild, InteractionHook hook) {
         EmbedBuilder embed = new EmbedBuilder();
+        config.setGuildId(guild.getId());
 
         guild.createCategory(categoryName).queue(category ->
                 category.createVoiceChannel(channelName).queue(voiceChannel -> {
@@ -56,7 +61,9 @@ public class DynamicVoiceManager {
         );
     }
 
-    public void setupExistsError(SlashCommandEvent event, GuildConfig gc) {
+    public void setupExistsError(SlashCommandEvent event) {
+        GuildConfig gc = configDAO.getEntry(event.getGuild().getId());
+
         EmbedBuilder embed = new EmbedBuilder();
 
         embed.setTitle("Setup error");
@@ -82,7 +89,9 @@ public class DynamicVoiceManager {
         String category = event.getMessage().getEmbeds().get(0).getFields().get(2).getValue();
 
         setupChannel(gc, channel, category, event.getGuild(), event.getHook());
-        event.getHook().editOriginal(channel + " : " + category).queue();
+        event.getMessage().delete().queue();
+        event.getChannel().sendMessage("Setup overwritten!").queue();
+//        System.out.println(event.getMessage().getId());
     }
 
     public void limitCommand(SlashCommandEvent event) {

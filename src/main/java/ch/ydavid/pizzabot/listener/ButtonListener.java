@@ -21,7 +21,6 @@ public class ButtonListener extends ListenerAdapter {
         event.deferReply().queue();
         switch (event.getButton().getId()) {
             case "setup-overwrite":
-
                 if (event.getMember().hasPermission(Permission.ADMINISTRATOR))
                     manager.getDynamicVoiceManager().overwriteSetup(event);
                 else {
