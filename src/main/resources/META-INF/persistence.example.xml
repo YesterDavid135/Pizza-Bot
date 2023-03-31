@@ -9,9 +9,9 @@
         <properties>
             <property name="javax.persistence.jdbc.driver" value="com.mysql.cj.jdbc.Driver"/>
             <property name="javax.persistence.jdbc.url"
-                      value="jdbc:mysql://<hostname>:<port>/<db-name>?createDatabaseIfNotExist=true"/>
-            <property name="javax.persistence.jdbc.user" value="<user>"/>
-            <property name="javax.persistence.jdbc.password" value="<password>"/>
+                      value="jdbc:mysql://localhost:3307/pizzabot?createDatabaseIfNotExist=true"/>
+            <property name="javax.persistence.jdbc.user" value="pizza"/>
+            <property name="javax.persistence.jdbc.password" value="pizza"/>
 
             <property name="hibernate.dialect" value="org.hibernate.dialect.MySQL5InnoDBDialect"/>
             <property name="hibernate.show_sql" value="true"/>
