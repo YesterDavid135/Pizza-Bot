@@ -15,7 +15,7 @@ services:
       - $MYSQLDB_LOCAL_PORT:$MYSQLDB_DOCKER_PORT
     volumes:
       - db:/var/lib/mysql
-  app:
+  pizzabot:
     depends_on:
       - mysqldb
     build: ./

@@ -1,3 +1,3 @@
 git pull
-mvn install
-docker-compose up
+mvn clean package
+docker-compose up -d --build
