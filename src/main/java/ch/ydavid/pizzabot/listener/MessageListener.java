@@ -36,17 +36,23 @@ public class MessageListener extends ListenerAdapter {
 
     @Override
     public void onSlashCommand(SlashCommandEvent event) {
-        event.deferReply().queue();
+
         System.out.println("[" + new Date() + "]" + event.getMember().getUser().getName() + " executed /" + event.getName());
         switch (event.getName()) {
             case "pizza":
+                event.deferReply().queue();
                 event.getHook().sendMessage("Pasta!").setEphemeral(true).queue();
                 break;
             case "lock":
             case "limit":
+                event.deferReply().queue();
                 manager.getDynamicVoiceManager().limitCommand(event);
                 break;
+            case "hide":
+                manager.getDynamicVoiceManager().hideCommand(event);
+                break;
             case "setup":
+                event.deferReply().queue();
                 if (event.getMember().hasPermission(Permission.ADMINISTRATOR))
                     manager.getDynamicVoiceManager().setupCommand(event);
                 else {
@@ -59,6 +65,7 @@ public class MessageListener extends ListenerAdapter {
                 }
                 break;
             default:
+                event.deferReply().queue();
                 EmbedBuilder embed = new EmbedBuilder()
                         .setTitle("Unknown Command")
                         .setDescription("Sorry, this command isn't valid anymore")

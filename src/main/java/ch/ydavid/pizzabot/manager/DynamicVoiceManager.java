@@ -3,8 +3,10 @@ package ch.ydavid.pizzabot.manager;
 import ch.ydavid.pizzabot.DAO.GuildConfigDAO;
 import ch.ydavid.pizzabot.entity.GuildConfig;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.VoiceChannel;
 import net.dv8tion.jda.api.events.guild.voice.GenericGuildVoiceUpdateEvent;
 import net.dv8tion.jda.api.events.interaction.ButtonClickEvent;
@@ -13,6 +15,7 @@ import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.interactions.components.Button;
 
 import java.awt.*;
+import java.util.EnumSet;
 
 public class DynamicVoiceManager {
     GuildConfigDAO configDAO = new GuildConfigDAO();
@@ -94,7 +97,7 @@ public class DynamicVoiceManager {
 //        System.out.println(event.getMessage().getId());
     }
 
-    public void limitCommand(SlashCommandEvent event) {
+    private boolean checkIfChannelOwner(SlashCommandEvent event) {
         Member m = event.getMember();
 
         EmbedBuilder embed = new EmbedBuilder();
@@ -102,15 +105,26 @@ public class DynamicVoiceManager {
             embed.setColor(Color.red);
             embed.setDescription("You are not in a voice channel");
             event.getHook().sendMessageEmbeds(embed.build()).queue();
-            return;
+            return false;
         }
         VoiceChannel vc = m.getVoiceState().getChannel();
         if (!vc.getName().startsWith(m.getUser().getName())) {
             embed.setColor(Color.red);
             embed.setDescription("This isn't your channel");
             event.getHook().sendMessageEmbeds(embed.build()).queue();
-            return;
+            return false;
         }
+        return true;
+    }
+
+    public void limitCommand(SlashCommandEvent event) {
+        if (!checkIfChannelOwner(event))
+            return;
+
+        Member m = event.getMember();
+        VoiceChannel vc = m.getVoiceState().getChannel();
+
+        EmbedBuilder embed = new EmbedBuilder();
 
         if (event.getName().equals("lock")) {
             if (vc.getUserLimit() == vc.getMembers().size()) {
@@ -121,9 +135,15 @@ public class DynamicVoiceManager {
                 embed.setDescription("Locked your voice channel!");
             }
         } else {
-            vc.getManager().setUserLimit((int) event.getOptions().get(0).getAsDouble()).queue();
-            embed.setDescription("Limited your voice channel!");
-
+            int option = (int) event.getOptions().get(0).getAsDouble();
+            if (option > 99 || option < -1) {
+                embed.setDescription("Please use a range between -1 and 99");
+                embed.setColor(Color.red);
+            } else {
+                vc.getManager().setUserLimit(option).queue();
+                embed.setDescription("Limited your voice channel!");
+                embed.setColor(Color.green);
+            }
         }
         event.getHook().sendMessageEmbeds(embed.build()).queue();
     }
@@ -156,4 +176,25 @@ public class DynamicVoiceManager {
     }
 
 
+    public void hideCommand(SlashCommandEvent event) {
+        if (!checkIfChannelOwner(event))
+            return;
+
+        Member m = event.getMember();
+        VoiceChannel vc = m.getVoiceState().getChannel();
+
+        Role role = event.getGuild().getPublicRole();
+        EnumSet<Permission> permissions = EnumSet.of(Permission.VIEW_CHANNEL);
+
+
+        if (vc.getPermissionOverride(role) != null && vc.getPermissionOverride(role).getDenied().contains(Permission.VIEW_CHANNEL)) {
+            vc.getManager().putPermissionOverride(role, permissions, null).queue();
+            event.reply("Unhidden your channel!").setEphemeral(true).queue();
+        } else {
+            vc.getManager().putPermissionOverride(role, null, permissions).queue();
+            event.reply("Hidden your chanel!").setEphemeral(true).queue();
+        }
+
+
+    }
 }

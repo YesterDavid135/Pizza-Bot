@@ -51,9 +51,10 @@ public class Main {
         for (Guild guild : api.getGuilds()) {
             if (guild != null) {
                 guild.upsertCommand("pizza", "Pizza time").queue();
-                guild.upsertCommand("setup", "Setup Dynamic Voice Channels").addOption(OptionType.STRING, "channel" , "Name of the new voice channel", true).addOption(OptionType.STRING, "category", "Name of the category", true).queue();
+                guild.upsertCommand("setup", "Setup Dynamic Voice Channels").addOption(OptionType.STRING, "channel", "Name of the new voice channel", true).addOption(OptionType.STRING, "category", "Name of the category", true).queue();
                 guild.upsertCommand("lock", "Locks your Voice Channel").queue();
-                guild.upsertCommand("limit", "Limits your Voice Channel").addOption(OptionType.NUMBER, "limit", "Limit").queue();
+                guild.upsertCommand("hide", "Hide's your Voice Channel").queue();
+                guild.upsertCommand("limit", "Limits your Voice Channel").addOption(OptionType.NUMBER, "limit", "Limit", true).queue();
                 System.out.println("Loaded " + guild.getName());
             }
         }
