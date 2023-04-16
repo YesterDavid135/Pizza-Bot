@@ -29,6 +29,7 @@ public class GuildConfigDAO {
         } finally {
             entityManager.close();
         }
+        entityManager.close();
 
         return configExists;
 
@@ -51,6 +52,7 @@ public class GuildConfigDAO {
         } finally {
             entityManager.close();
         }
+        entityManager.close();
 
         return success;
 
@@ -73,6 +75,7 @@ public class GuildConfigDAO {
         } finally {
             entityManager.close();
         }
+        entityManager.close();
 
         return success;
 
@@ -98,7 +101,7 @@ public class GuildConfigDAO {
         } finally {
             entityManager.close();
         }
-
+        entityManager.close();
         return gc;
 
     }
